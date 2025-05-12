@@ -21,31 +21,109 @@ if(isset($_GET['id']) && $_GET['id'] != $_SESSION['user_id']) {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Social Network</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .usernav { background-color: #4267b2; }
-        .usernav ul { float: right; }
-        .usernav ul li { display: inline; }
-        .usernav ul li a:hover { background-color: #23385f; }
-        .createpostbuttons { width: 50%; margin: auto; overflow: auto; }
-        .createpostbuttons img { display: inline-block; width: 12%; height: auto; }
-        .createpostbuttons label { cursor: pointer; }
-        .createpostbuttons input[type="file"] { display: none; }
-        .createpostbuttons input[type=submit] { width: 86%; float: right; background-color: #4267b2; }
-        .createpostbuttons input[type=submit]:hover { background-color: #23385f; }
+    <link rel="stylesheet" type="text/css" href="resources/css/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <style>
+    .post{
+        margin-right: 50px;
+        float: right;
+        margin-bottom: 18px;
+    }
+    .profile{
+        margin-left: 50px;
+        background-color: white;
+        box-shadow: 0 0 5px #4267b2;
+        width: 220px;
+        padding: 20px;
+    }
+    input[type="file"]{
+        display: none;
+    }
+    label.upload{
+        cursor: pointer;
+        color: white;
+        background-color: #4267b2;
+        padding: 8px 12px;
+        display: inline-block;
+        max-width: 80px;
+        overflow: auto;
+    }
+    label.upload:hover{
+        background-color: #23385f;
+    }
+    .changeprofile{
+        color: #23385f;
+        font-family: Fontin SmallCaps;
+    }
     </style>
 </head>
-<body class="bg-gray-100">
+<body>
     <div class="container mx-auto">
-        <?php include 'includes/navbar.php'; ?>
-        
-        <h1 class="text-center text-3xl font-semibold text-blue-800 mb-6">Profile</h1>
-        
+<div class="bg-white shadow-md p-4">
+    <?php
+        // Friend requests count query
+        $sql2 = "SELECT COUNT(*) AS count FROM friendship 
+                 WHERE friendship.user2_id = {$_SESSION['user_id']} AND friendship.friendship_status = 0";
+        $query2 = mysqli_query($conn, $sql2);
+        $row = mysqli_fetch_assoc($query2);
+    ?>
+    <div class="container mx-auto flex justify-between items-center">
+        <!-- Navbar Links -->
+        <ul class="flex space-x-8">
+            <li>
+                <a href="requests.php" class="text-gray-700 hover:text-blue-600">
+                    Friend Requests (<?php echo $row['count'] ?>)
+                </a>
+            </li>
+            <li>
+                <a href="profile.php" class="text-gray-700 hover:text-blue-600">Profile</a>
+            </li>
+            <li>
+                <a href="friends.php" class="text-gray-700 hover:text-blue-600">Friends</a>
+            </li>
+            <li>
+                <a href="home.php" class="text-gray-700 hover:text-blue-600">Home</a>
+            </li>
+            <li>
+                <a href="logout.php" class="text-gray-700 hover:text-blue-600">Log Out</a>
+            </li>
+        </ul>
+
+        <!-- Search Form -->
+        <div class="relative">
+            <form method="get" action="search.php" onsubmit="return validateField()">
+                <div class="flex items-center space-x-2">
+                    <select name="location" class="px-3 py-1 rounded-lg border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600">
+                        <option value="emails">Emails</option>
+                        <option value="names">Names</option>
+                        <option value="hometowns">Hometowns</option>
+                        <option value="posts">Posts</option>
+                    </select>
+                    <input type="text" name="query" id="query" placeholder="Search" class="px-3 py-1 rounded-lg border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    <input type="submit" value="Search" id="querybutton" class="px-4 py-1 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-800">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function validateField(){
+    var query = document.getElementById("query");
+    var button = document.getElementById("querybutton");
+    if(query.value == "") {
+        query.placeholder = 'Type something!';
+        return false;
+    }
+    return true;
+}
+</script>
+
+<div class="container mx-auto py-10">
+    
         <?php
         $postsql;
         if($flag == 0) { // Your Own Profile       
@@ -81,7 +159,7 @@ if(isset($_GET['id']) && $_GET['id'] != $_SESSION['user_id']) {
             $profilequery = mysqli_query($conn, $profilesql);
             $row = mysqli_fetch_assoc($profilequery);
             mysqli_data_seek($profilequery,0);
-            if(isset($row['friendship_status'])){
+            if(isset($row['friendship_status'])){ // Either a friend or requested as a friend
                 if($row['friendship_status'] == 1){ // Friend
                     $postsql = "SELECT posts.post_caption, posts.post_time, users.user_firstname, users.user_lastname,
                                         posts.post_public, users.user_id, users.user_gender, users.user_nickname,
@@ -117,20 +195,98 @@ if(isset($_GET['id']) && $_GET['id'] != $_SESSION['user_id']) {
             }
         }
         $postquery = mysqli_query($conn, $postsql);    
+        if($postquery){
+            // Posts
+            $width = '40px'; 
+            $height = '40px';
+            if(mysqli_num_rows($postquery) == 0){ // No Posts
+                if($flag == 0){ // Message shown if it's your own profile
+                    echo '<div class="post">';
+                    echo 'You don\'t have any posts yet';
+                    echo '</div>';
+                } else { // Message shown if it's another profile other than you.
+                    echo '<div class="post">';
+                    echo 'There is no public posts to show.';
+                    echo '</div>';
+                }
+                include 'includes/profile.php';
+            } else {
+                while($row = mysqli_fetch_assoc($postquery)){
+                    include 'includes/post.php';
+                }
+                // Profile Info
+                include 'includes/profile.php';
+                ?>
+                <br>
+                <?php if($flag == 0){?>
+                <div class="profile">
+                    <center class="changeprofile">Change Profile Picture</center>
+                    <br>
+                    <form action="" method="post" enctype="multipart/form-data">
+                        <center>
+                            <label class="upload" onchange="showPath()">
+                                <span id="path" style="color: white;">... Browse</span>
+                                <input type="file" name="fileUpload" id="selectedFile">
+                            </label>
+                        </center>
+                        <br>
+                        <input type="submit" value="Upload Image" name="profile">
+                    </form>
+                </div>
+                <br>
+                <div class="profile">
+                    <center class="changeprofile">Add Phone Number</center>
+                    <br>
+                    <form method="post" onsubmit="return validateNumber()">
+                        <center>
+                            <input type="text" name="number" id="phonenum">
+                            <div class="required"></div>
+                            <br>
+                            <input type="submit" value="Submit" name="phone">
+                        </center>
+                    </form>
+                </div>
+                <br>
+                <?php } ?>
+                <?php
+            }
+        }
         ?>
-        
-        <div class="container mx-auto">
-    <div class="flex space-x-4">
-        <?php
-if ($_SERVER['REQUEST_METHOD'] == 'POST') { 
-    if (isset($_POST['request'])) { 
+    </div>
+    </div>
+</body>
+<script>
+function showPath(){
+    var path = document.getElementById("selectedFile").value;
+    path = path.replace(/^.*\\/, "");
+    document.getElementById("path").innerHTML = path;
+}
+function validateNumber(){
+    var number = document.getElementById("phonenum").value;
+    var required = document.getElementsByClassName("required");
+    if(number == ""){
+        required[0].innerHTML = "You must type Your Number.";
+        return false;
+    } else if(isNaN(number)){
+        required[0].innerHTML = "Phone Number must contain digits only."
+        return false;
+    }
+    return true;
+}
+</script>
+</html>
+<?php include 'functions/upload.php'; ?>
+
+<?php
+if ($_SERVER['REQUEST_METHOD'] == 'POST') { // A form is posted
+    if (isset($_POST['request'])) { // Send a Friend Request
         $sql3 = "INSERT INTO friendship(user1_id, user2_id, friendship_status)
                  VALUES ({$_SESSION['user_id']}, $current_id, 0)";
         $query3 = mysqli_query($conn, $sql3);
         if(!$query3){
             echo mysqli_error($conn);
         }
-    } else if(isset($_POST['remove'])) { 
+    } else if(isset($_POST['remove'])) { // Remove
         $sql3 = "DELETE FROM friendship
                  WHERE ((friendship.user1_id = $current_id AND friendship.user2_id = {$_SESSION['user_id']})
                  OR (friendship.user1_id = {$_SESSION['user_id']} AND friendship.user2_id = $current_id))
@@ -139,7 +295,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if(!$query3){
             echo mysqli_error($conn);
         }
-    } else if(isset($_POST['phone'])) { 
+    } else if(isset($_POST['phone'])) { // Add a Phone Number to Your Profile
         $sql3 = "INSERT INTO user_phone(user_id, user_phone) VALUES ({$_SESSION['user_id']},{$_POST['number']})";
         $query3 = mysqli_query($conn, $sql3);
         if(!$query3){
@@ -148,234 +304,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
     sleep(4);
 }
-?>
-
-<div class="sm:container sm:mx-auto">
-    <div class="flex flex-col space-y-4">
-        <!-- Left Aligned Profile Section (PHP Content) -->
-    <div class="w-full md:w-1/4 bg-white shadow-lg p-4 mt-4">
-        <center class="text-blue-800 font-semibold">Profile Information</center>
-        <br>
-        <?php
-            echo '<div class="profile">';
-            echo '<center>';
-            $row = mysqli_fetch_assoc($profilequery);
-            // Name and Nickname
-            if(!empty($row['user_nickname']))
-                echo $row['user_firstname'] . ' ' . $row['user_lastname'] . ' (' . $row['user_nickname'] . ')';
-            else
-                echo $row['user_firstname'] . ' ' . $row['user_lastname'];
-            echo '<br>';
-            // Profile Info & View
-            $width = '168px';
-            $height = '168px';
-            include 'includes/profile_picture.php';
-            echo '<br>';
-            // Gender
-            if($row['user_gender'] == "M")
-                echo 'Male';
-            else if($row['user_gender'] == "F")
-                echo 'Female';
-            echo '<br>';
-            // Status
-            if(!empty($row['user_status'])){
-                if($row['user_status'] == "S")
-                    echo 'Single';
-                else if($row['user_status'] == "E")
-                    echo 'Engaged';
-                else if($row['user_status'] == "M")
-                    echo 'Married';
-                echo '<br>';
-            }
-            // Birthdate
-            echo $row['user_birthdate'];
-            // Additional Information
-            if(!empty($row['user_hometown'])){
-                echo '<br>';
-                echo $row['user_hometown'];
-            }
-            if(!empty($row['user_about'])){
-                echo '<br>';
-                echo $row['user_about'];
-            }
-            // Friendship Status
-            if($flag == 1){
-                echo '<br>';
-                if(isset($row['friendship_status'])) {
-                    if($row['friendship_status'] == 1){
-                        echo '<form method="post">';
-                        echo '<input type="submit" value="Friends" disabled="disabled" id="special">';
-                        echo '</form>';
-                    } else if ($row['friendship_status'] == 0){
-                        echo '<form method="post">';
-                        echo '<input type="submit" value="Request Pending" disabled="disabled" id="special">';
-                        echo '</form>';
-                    }
-                } else {
-                    echo '<form method="post">';
-                    echo '<input type="submit" value="Send Friend Request" name="request">';
-                    echo'</form>';
-                }
-            }
-
-            echo '<center>';
-            echo'</div>';
-
-            $query4 = mysqli_query($conn, "SELECT * FROM user_phone WHERE user_id = {$row['user_id']}");
-            if(!$query4){
-                echo mysqli_error($conn);
-            }
-            if(mysqli_num_rows($query4) > 0){
-                echo '<br>';
-                echo '<div class="profile">';
-                echo '<center class="changeprofile">';
-                echo 'Phones:';
-                echo '<br>';
-                while($row4 = mysqli_fetch_assoc($query4)){
-                    echo $row4['user_phone'];
-                    echo '<br>';
-                }
-                echo '</center>';
-                echo '</div>';
-            }
-        ?>
-    </div>
-        <!-- Left Column: Profile Section -->
-        <div class="w-full md:w-1/4 bg-white shadow-lg p-4">
-            <center class="text-blue-800 font-semibold">Add Phone Number</center>
-            <br>
-            <form method="post" onsubmit="return validateNumber()">
-                <center>
-                    <input type="text" name="number" id="phonenum" class="p-2 border border-gray-400 w-full mb-2 rounded">
-                    <div class="required text-red-500"></div>
-                    <br>
-                    <input type="submit" value="Submit" name="phone" class="w-full bg-blue-600 text-white py-2 rounded mt-4 hover:bg-blue-800">
-                </center>
-            </form>
-        </div>
-
-        <div class="w-full md:w-1/4 bg-white shadow-lg p-4">
-            <center class="text-blue-800 font-semibold">Change Profile Picture</center>
-            <br>
-            <form action="" method="post" enctype="multipart/form-data">
-                <center>
-                    <label class="cursor-pointer bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-800" onchange="showPath()">
-                        <span id="path" class="text-white">... Browse</span>
-                        <input type="file" name="fileUpload" id="selectedFile" class="hidden">
-                    </label>
-                </center>
-                <br>
-                <input type="submit" value="Upload Image" name="profile" class="w-full bg-blue-600 text-white py-2 mt-4 rounded hover:bg-blue-800">
-            </form>
-        </div>
-    </div>
-</div>
-
-<script>
-    function showPath(){
-        var path = document.getElementById("selectedFile").value;
-        path = path.replace(/^.*\\/, "");
-        document.getElementById("path").innerHTML = path;
-    }
-
-    function validateNumber(){
-        var number = document.getElementById("phonenum").value;
-        var required = document.getElementsByClassName("required");
-        if(number == ""){
-            required[0].innerHTML = "You must type Your Number.";
-            return false;
-        } else if(isNaN(number)){
-            required[0].innerHTML = "Phone Number must contain digits only."
-            return false;
-        }
-        return true;
-    }
-</script>
-
-
-
-        <!-- Right Column: Posts Section -->
-        <div class="w-3/4">
-            <?php
-            if($postquery) {
-                // Posts
-                $width = '40px'; 
-                $height = '40px';
-                if(mysqli_num_rows($postquery) == 0) {
-                    if($flag == 0) {
-                        echo '<div class="post p-4 bg-white shadow-md mb-4">';
-                        echo 'You don\'t have any posts yet';
-                        echo '</div>';
-                    } else {
-                        echo '<div class="post p-4 bg-white shadow-md mb-4">';
-                        echo 'There are no public posts to show.';
-                        echo '</div>';
-                    }  
-                } else {
-                    while($row = mysqli_fetch_assoc($postquery)) {
-                        echo '<div class="bg-white p-6 mb-6 rounded-lg shadow-md border border-gray-300">';  // Border added here
-            include 'includes/post.php'; // Assuming your post rendering is done in this include
-            echo '</div>';
-                    }
-                }
-            }
-            ?>
-            <br>
-        </div>
-    </div>
-</div>
-
-<script>
-    function showPath(){
-        var path = document.getElementById("selectedFile").value;
-        path = path.replace(/^.*\\/, "");
-        document.getElementById("path").innerHTML = path;
-    }
-
-    function validateNumber(){
-        var number = document.getElementById("phonenum").value;
-        var required = document.getElementsByClassName("required");
-        if(number == ""){
-            required[0].innerHTML = "You must type Your Number.";
-            return false;
-        } else if(isNaN(number)){
-            required[0].innerHTML = "Phone Number must contain digits only."
-            return false;
-        }
-        return true;
-    }
-</script>
-
-</body>
-</html>
-
-<?php include 'functions/upload.php'; ?>
-
-<?php
 if ($_SERVER['REQUEST_METHOD'] == 'POST') { 
-    if (isset($_POST['request'])) { 
-        $sql3 = "INSERT INTO friendship(user1_id, user2_id, friendship_status)
-                 VALUES ({$_SESSION['user_id']}, $current_id, 0)";
-        $query3 = mysqli_query($conn, $sql3);
-        if(!$query3){
-            echo mysqli_error($conn);
+    if (isset($_POST['delete_post'])) { // Als de verwijderknop is ingedrukt
+        $post_id = $_POST['post_id'];
+
+        // SQL-query om de post te verwijderen
+        $sql_delete_post = "DELETE FROM posts WHERE post_id = $post_id AND post_by = {$_SESSION['user_id']}";
+        $query_delete_post = mysqli_query($conn, $sql_delete_post);
+
+        if ($query_delete_post) {
+            echo "<script>alert('Post verwijderd!'); window.location.href = 'home.php';</script>";
+        } else {
+            echo "<script>alert('Fout bij het verwijderen van de post.');</script>";
         }
-    } else if(isset($_POST['remove'])) { 
-        $sql3 = "DELETE FROM friendship
-                 WHERE ((friendship.user1_id = $current_id AND friendship.user2_id = {$_SESSION['user_id']})
-                 OR (friendship.user1_id = {$_SESSION['user_id']} AND friendship.user2_id = $current_id))
-                 AND friendship.friendship_status = 1";
-        $query3 = mysqli_query($conn, $sql3);
-        if(!$query3){
-            echo mysqli_error($conn);
-        }
-    } else if(isset($_POST['phone'])) { 
-        $sql3 = "INSERT INTO user_phone(user_id, user_phone) VALUES ({$_SESSION['user_id']},{$_POST['number']})";
-        $query3 = mysqli_query($conn, $sql3);
-        if(!$query3){
-            echo mysqli_error($conn);
-        } 
     }
-    sleep(4);
 }
 ?>
