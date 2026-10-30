@@ -4,7 +4,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/PHP-777BB4?logo=php&logoColor=white" alt="PHP">
-  <img src="https://img.shields.io/badge/MySQL-4479A1?logo=mysql&logoColor=white" alt="MySQL">
+  <img src="https://img.shields.io/badge/SQLite-003B57?logo=sqlite&logoColor=white" alt="SQLite">
   <img src="https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black" alt="JavaScript">
   <img src="https://img.shields.io/badge/Tailwind%20CSS-06B6D4?logo=tailwindcss&logoColor=white" alt="Tailwind CSS">
 </p>
@@ -24,15 +24,15 @@ Een klein sociaal netwerk, gebouwd in gewone PHP zonder framework. Je maakt een 
 
 ## Zelf draaien
 
-Je hebt een lokale webserver met PHP en MySQL nodig, bijvoorbeeld XAMPP.
+Je hebt alleen PHP nodig (bijvoorbeeld XAMPP); een database hoef je niet in te stellen. De site gebruikt **SQLite**: bij het eerste bezoek maakt hij zelf `private/database.sqlite` aan, met de voorbeelddata uit `private/database.sql`.
 
 1. Clone het project in de map van je webserver (bij XAMPP is dat `htdocs`):
    ```bash
    git clone https://github.com/ParisAngelopoulos/socialnetwork.git
    ```
-2. Maak in phpMyAdmin een database aan met de naam `socialnetwork`.
-3. Importeer daarin het bestand `socialnetwork (1).sql`.
-4. Ga naar http://localhost/socialnetwork en log in met een van de testaccounts, of maak zelf een account aan.
+2. Ga naar http://localhost/socialnetwork en log in met een van de testaccounts, of maak zelf een account aan.
+
+Wil je opnieuw beginnen met alleen de voorbeelddata? Verwijder dan `private/database.sqlite`.
 
 ### Testaccounts
 
@@ -56,7 +56,8 @@ De verbinding met de database staat in `functions/functions.php` (standaard `roo
 | `home.php` | De feed en een nieuw bericht plaatsen |
 | `profile.php` | Profielpagina's en vriendverzoeken |
 | `includes/` | Stukken die op meer pagina's terugkomen (navigatie, bericht, profiel) |
-| `functions/` | Databaseverbinding en uploaden van foto's |
+| `functions/` | Databaseverbinding (SQLite) en uploaden van foto's |
+| `private/` | De database en `database.sql` met de tabellen en voorbeelddata (niet via het web te openen) |
 | `data/images/` | Geüploade profiel- en berichtfoto's |
 | `resources/` | CSS en JavaScript |
 

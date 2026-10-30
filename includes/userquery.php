@@ -2,17 +2,17 @@
 
 // $query was already run with db_query() in search.php
 if(!$query){
-    echo mysqli_error($conn);
+    echo db_error();
 }
 $width = '168px';
 $height = '168px';
-if(mysqli_num_rows($query) == 0){
+if(db_count($query) == 0){
     echo '<div class="userquery">';
     echo 'We couldn\'t find any results for these keywords: ' . h($key);
     echo '<br><br>';
     echo '</div>';
 } else {
-    while($row = mysqli_fetch_assoc($query)){
+    while($row = db_fetch($query)){
         echo '<div class="userquery">';
         include 'includes/profile_picture.php';
         echo '<br>';

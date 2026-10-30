@@ -1,7 +1,7 @@
 <?php
 echo '<div class="profile">';
 echo '<center>';
-$row = mysqli_fetch_assoc($profilequery);
+$row = db_fetch($profilequery);
 // Name and Nickname
 if(!empty($row['user_nickname']))
     echo h($row['user_firstname'] . ' ' . $row['user_lastname'] . ' (' . $row['user_nickname'] . ')');
@@ -63,17 +63,17 @@ if($flag == 1){
 echo '<center>'; 
 echo'</div>';
 
-$query4 = mysqli_query($conn, "SELECT * FROM user_phone WHERE user_id = {$row['user_id']}");
+$query4 = db_query("SELECT * FROM user_phone WHERE user_id = {$row['user_id']}");
 if(!$query4){
-    echo mysqli_error($conn);
+    echo db_error();
 }
-if(mysqli_num_rows($query4) > 0){
+if(db_count($query4) > 0){
     echo '<br>';
     echo '<div class="profile">';
     echo '<center class="changeprofile">'; 
     echo 'Phones:';
     echo '<br>';
-    while($row4 = mysqli_fetch_assoc($query4)){
+    while($row4 = db_fetch($query4)){
         echo h($row4['user_phone']);
         echo '<br>';
     }

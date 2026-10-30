@@ -62,18 +62,18 @@ $conn = connect();
             <div class="mt-8">
     <?php 
     // Public Posts Union Friends' Private Posts
-    $sql = "SELECT posts.post_caption, posts.post_time, posts.post_public, sn_users.user_firstname,
-                        sn_users.user_lastname, sn_users.user_id, sn_users.user_gender, posts.post_id
+    $sql = "SELECT posts.post_caption, posts.post_time, posts.post_public, users.user_firstname,
+                        users.user_lastname, users.user_id, users.user_gender, posts.post_id
             FROM posts
-            JOIN sn_users
-            ON posts.post_by = sn_users.user_id
-            WHERE posts.post_public = 'Y' OR sn_users.user_id = {$_SESSION['user_id']}
+            JOIN users
+            ON posts.post_by = users.user_id
+            WHERE posts.post_public = 'Y' OR users.user_id = {$_SESSION['user_id']}
             UNION
-            SELECT posts.post_caption, posts.post_time, posts.post_public, sn_users.user_firstname,
-                    sn_users.user_lastname, sn_users.user_id, sn_users.user_gender, posts.post_id
+            SELECT posts.post_caption, posts.post_time, posts.post_public, users.user_firstname,
+                    users.user_lastname, users.user_id, users.user_gender, posts.post_id
             FROM posts
-            JOIN sn_users
-            ON posts.post_by = sn_users.user_id
+            JOIN users
+            ON posts.post_by = users.user_id
             JOIN (
                 SELECT friendship.user1_id AS user_id
                 FROM friendship
@@ -86,17 +86,17 @@ $conn = connect();
             ON userfriends.user_id = posts.post_by
             WHERE posts.post_public = 'N'
             ORDER BY post_time DESC";
-    $query = mysqli_query($conn, $sql);
+    $query = db_query($sql);
     if(!$query){
-        echo mysqli_error($conn);
+        echo db_error();
     }
-    if(mysqli_num_rows($query) == 0){
+    if(db_count($query) == 0){
         echo '<div class="bg-white p-4 rounded-lg shadow-md text-center mb-4">';
         echo 'There are no posts yet to show.';
         echo '</div>';
     }
     else{
-        while($row = mysqli_fetch_assoc($query)){
+        while($row = db_fetch($query)){
             echo '<div class="bg-white p-6 mb-6 rounded-lg shadow-md border border-gray-300">';  // Border added here
             include 'includes/post.php'; // Assuming your post rendering is done in this include
             echo '</div>';
@@ -155,13 +155,13 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') { // Form is Posted
     }
     $poster = $_SESSION['user_id'];
     // Apply Insertion Query
-    $query = db_query("INSERT INTO posts (post_caption, post_public, post_time, post_by) VALUES (?, ?, NOW(), ?)", [$caption, $public, $poster]);
+    $query = db_query("INSERT INTO posts (post_caption, post_public, post_time, post_by) VALUES (?, ?, datetime('now', 'localtime'), ?)", [$caption, $public, $poster]);
     // Action on Successful Query
     if($query){
         // Upload Post Image If a file was chosen
         if (!empty($_FILES['fileUpload']['name'])) {
             // Retrieve Post ID
-            $last_id = mysqli_insert_id($conn);
+            $last_id = db_insert_id();
             include 'functions/upload.php'; // Assuming this handles the image upload
         }
         header("location: home.php");

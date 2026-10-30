@@ -3,8 +3,8 @@
         // Friend requests count query
         $sql2 = "SELECT COUNT(*) AS count FROM friendship 
                  WHERE friendship.user2_id = {$_SESSION['user_id']} AND friendship.friendship_status = 0";
-        $query2 = mysqli_query($conn, $sql2);
-        $row = mysqli_fetch_assoc($query2);
+        $query2 = db_query($sql2);
+        $row = db_fetch($query2);
     ?>
     <div class="container mx-auto flex justify-between items-center">
         <!-- Navbar Links -->
