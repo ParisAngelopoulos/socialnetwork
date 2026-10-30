@@ -3,7 +3,10 @@
 function connect() {
     static $conn;
     if ($conn === NULL){ 
-        $conn = mysqli_connect('localhost','root','','socialnetwork');
+        // On the web host, db_config.php (written on deploy, not in git) holds the login; locally XAMPP defaults
+        $c = is_file(__DIR__ . '/../db_config.php') ? require __DIR__ . '/../db_config.php' : [];
+        $conn = mysqli_connect($c['host'] ?? 'localhost', $c['user'] ?? 'root', $c['password'] ?? '', $c['database'] ?? 'socialnetwork');
+        mysqli_set_charset($conn, 'utf8mb4');
     }
     return $conn;
 }
