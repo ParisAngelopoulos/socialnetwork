@@ -11,10 +11,10 @@ echo '<span class="postedtime">' . $row['post_time'] . '</span>';
 echo '</p>';
 echo '<div>';
 include 'profile_picture.php';
-echo '<a class="profilelink" href="profile.php?id=' . $row['user_id'] .'">' . $row['user_firstname'] . ' ' . $row['user_lastname'] . '</a>';
+echo '<a class="profilelink" href="profile.php?id=' . $row['user_id'] .'">' . h($row['user_firstname'] . ' ' . $row['user_lastname']) . '</a>';
 echo '</div>';
 echo '<br>';
-echo '<p class="caption">' . $row['post_caption'] . '</p>';
+echo '<p class="caption">' . nl2br(h($row['post_caption'])) . '</p>';
 echo '<center>'; 
 $target = glob("data/images/posts/" . $row['post_id'] . ".*");
 if($target) {

@@ -32,7 +32,19 @@ Je hebt een lokale webserver met PHP en MySQL nodig, bijvoorbeeld XAMPP.
    ```
 2. Maak in phpMyAdmin een database aan met de naam `socialnetwork`.
 3. Importeer daarin het bestand `socialnetwork (1).sql`.
-4. Ga naar http://localhost/socialnetwork en maak een account aan.
+4. Ga naar http://localhost/socialnetwork en log in met een van de testaccounts, of maak zelf een account aan.
+
+### Testaccounts
+
+In de database staan vijf gebruikers met berichten, vriendschappen en openstaande vriendverzoeken. Ze hebben allemaal het wachtwoord `welkom123`.
+
+| Naam | E-mailadres |
+| --- | --- |
+| Paris Angelopoulos | `paris@voorbeeld.nl` (heeft 2 vriendverzoeken openstaan) |
+| Sanne de Vries | `sanne@voorbeeld.nl` |
+| Daan Bakker | `daan@voorbeeld.nl` |
+| Youssef El Amrani | `youssef@voorbeeld.nl` |
+| Lisa Jansen | `lisa@voorbeeld.nl` |
 
 De verbinding met de database staat in `functions/functions.php` (standaard `root` zonder wachtwoord op `localhost`).
 
@@ -53,6 +65,13 @@ De verbinding met de database staat in `functions/functions.php` (standaard `roo
 - Hoe sessies werken en hoe je pagina's afschermt voor wie niet is ingelogd.
 - Hoe je met SQL-joins een feed samenstelt uit je eigen berichten en die van je vrienden.
 - Foto's uploaden en aan een gebruiker of bericht koppelen.
+
+## Beveiliging
+
+- Alle invoer van gebruikers gaat via **prepared statements** (`db_query()` in `functions/functions.php`), dus niemand kan SQL in een zoekveld of formulier typen.
+- Alles wat gebruikers schrijven wordt **ge-escaped** (`h()`) voordat het op de pagina komt, zodat een bericht geen JavaScript kan uitvoeren.
+- Wachtwoorden worden opgeslagen met `password_hash`. Oude md5-wachtwoorden worden bij de eerste keer inloggen vanzelf omgezet.
+- Bij uploads worden alleen JPG, PNG en GIF geaccepteerd, en het bestand moet echt een afbeelding zijn.
 
 ---
 

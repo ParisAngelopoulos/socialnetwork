@@ -49,7 +49,7 @@ $conn = connect();
                                 include 'includes/profile_picture.php'; // Add the profile picture
                                 echo '</div>';
                                 echo '<a href="profile.php?id=' . $row['user_id'] . '" class="text-xl font-medium text-blue-600 hover:underline">';
-                                echo $row['user_firstname'] . ' ' . $row['user_lastname'];
+                                echo h($row['user_firstname'] . ' ' . $row['user_lastname']);
                                 echo '</a>';
                                 echo '</div>';
                             }

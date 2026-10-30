@@ -122,11 +122,17 @@ $conn = connect();
 if ($_SERVER['REQUEST_METHOD'] == 'POST') { // A form is posted
     if (isset($_POST['login'])) { // Login process
         $useremail = $_POST['useremail'];
-        $userpass = md5($_POST['userpass']);
-        $query = mysqli_query($conn, "SELECT * FROM users WHERE user_email = '$useremail' AND user_password = '$userpass'");
+        $userpass = $_POST['userpass'];
+        $query = db_query("SELECT * FROM users WHERE user_email = ?", [$useremail]);
         if($query){
-            if(mysqli_num_rows($query) == 1) {
-                $row = mysqli_fetch_assoc($query);
+            $row = mysqli_fetch_assoc($query);
+            // Old accounts still have an md5 hash; on login it is replaced by a safe password_hash
+            $oldhash = $row && $row['user_password'] === md5($userpass);
+            if($row && ($oldhash || password_verify($userpass, $row['user_password']))) {
+                if($oldhash) {
+                    db_query("UPDATE users SET user_password = ? WHERE user_id = ?", [password_hash($userpass, PASSWORD_DEFAULT), $row['user_id']]);
+                }
+                session_regenerate_id(true);
                 $_SESSION['user_id'] = $row['user_id'];
                 $_SESSION['user_name'] = $row['user_firstname'] . " " . $row['user_lastname'];
                 header("location:home.php");
@@ -145,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // A form is posted
         $userfirstname = $_POST['userfirstname'];
         $userlastname = $_POST['userlastname'];
         $usernickname = $_POST['usernickname'];
-        $userpassword = md5($_POST['userpass']);
+        $userpassword = password_hash($_POST['userpass'], PASSWORD_DEFAULT);
         $useremail = $_POST['useremail'];
         $userbirthdate = $_POST['selectyear'] . '-' . $_POST['selectmonth'] . '-' . $_POST['selectday'];
         $usergender = $_POST['usergender'];
@@ -154,8 +160,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // A form is posted
         $userstatus = $_POST['userstatus'] ?? NULL;
 
         // Check for Some Unique Constraints
-        $query = mysqli_query($conn, "SELECT user_nickname, user_email FROM users WHERE user_nickname = '$usernickname' OR user_email = '$useremail'");
-        if(mysqli_num_rows($query) > 0){
+        $query = db_query("SELECT user_nickname, user_email FROM users WHERE user_nickname = ? OR user_email = ?", [$usernickname, $useremail]);
+        $exists = mysqli_num_rows($query) > 0;
+        if($exists){
             $row = mysqli_fetch_assoc($query);
             if($usernickname == $row['user_nickname'] && !empty($usernickname)){
                 ?> <script>
@@ -169,13 +176,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // A form is posted
             }
         }
         // Insert Data
-        $sql = "INSERT INTO users(user_firstname, user_lastname, user_nickname, user_password, user_email, user_gender, user_birthdate, user_status, user_about, user_hometown)
-                VALUES ('$userfirstname', '$userlastname', '$usernickname', '$userpassword', '$useremail', '$usergender', '$userbirthdate', '$userstatus', '$userabout', '$userhometown')";
-        $query = mysqli_query($conn, $sql);
+        $query = !$exists && db_query("INSERT INTO users(user_firstname, user_lastname, user_nickname, user_password, user_email, user_gender, user_birthdate, user_status, user_about, user_hometown)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                [$userfirstname, $userlastname, $usernickname, $userpassword, $useremail, $usergender, $userbirthdate, $userstatus, $userabout, $userhometown]);
         if($query){
-            $query = mysqli_query($conn, "SELECT user_id FROM users WHERE user_email = '$useremail'");
-            $row = mysqli_fetch_assoc($query);
-            $_SESSION['user_id'] = $row['user_id'];
+            session_regenerate_id(true);
+            $_SESSION['user_id'] = mysqli_insert_id($conn);
             header("location:home.php");
         }
     }

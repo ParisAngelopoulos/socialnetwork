@@ -12,7 +12,7 @@ $conn = connect();
 
 <?php
 if(isset($_GET['id']) && $_GET['id'] != $_SESSION['user_id']) {
-    $current_id = $_GET['id'];
+    $current_id = (int)$_GET['id']; // only a number can end up in the queries below
     $flag = 1;
 } else {
     $current_id = $_SESSION['user_id'];
@@ -296,8 +296,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // A form is posted
             echo mysqli_error($conn);
         }
     } else if(isset($_POST['phone'])) { // Add a Phone Number to Your Profile
-        $sql3 = "INSERT INTO user_phone(user_id, user_phone) VALUES ({$_SESSION['user_id']},{$_POST['number']})";
-        $query3 = mysqli_query($conn, $sql3);
+        $query3 = db_query("INSERT INTO user_phone(user_id, user_phone) VALUES (?, ?)", [$_SESSION['user_id'], $_POST['number']]);
         if(!$query3){
             echo mysqli_error($conn);
         } 
@@ -306,7 +305,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // A form is posted
 }
 if ($_SERVER['REQUEST_METHOD'] == 'POST') { 
     if (isset($_POST['delete_post'])) { // Als de verwijderknop is ingedrukt
-        $post_id = $_POST['post_id'];
+        $post_id = (int)$_POST['post_id'];
 
         // SQL-query om de post te verwijderen
         $sql_delete_post = "DELETE FROM posts WHERE post_id = $post_id AND post_by = {$_SESSION['user_id']}";

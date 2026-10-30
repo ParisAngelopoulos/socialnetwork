@@ -28,11 +28,11 @@ $conn = connect();
             if (isset($_GET['accept'])) {
                 $sql = "UPDATE friendship
                         SET friendship.friendship_status = 1
-                        WHERE friendship.user1_id = {$_GET['id']} AND friendship.user2_id = {$_SESSION['user_id']}";
-                $query = mysqli_query($conn, $sql);
+                        WHERE friendship.user1_id = ? AND friendship.user2_id = ?";
+                $query = db_query($sql, [$_GET['id'], $_SESSION['user_id']]);
                 if($query){
                     echo '<div class="userquery text-center text-green-600 font-semibold">';
-                    echo 'You have accepted ' . $_GET['name'];
+                    echo 'You have accepted ' . h($_GET['name']);
                     echo '<br><br>';
                     echo 'Redirecting in 5 seconds';
                     echo '<br><br>';
@@ -45,11 +45,11 @@ $conn = connect();
                 }
             } else if(isset($_GET['ignore'])) {
                 $sql6 = "DELETE FROM friendship
-                        WHERE friendship.user1_id = {$_GET['id']} AND friendship.user2_id = {$_SESSION['user_id']}";
-                $query6 = mysqli_query($conn, $sql6);
+                        WHERE friendship.user1_id = ? AND friendship.user2_id = ?";
+                $query6 = db_query($sql6, [$_GET['id'], $_SESSION['user_id']]);
                 if($query6){
                     echo '<div class="userquery text-center text-red-600 font-semibold">';
-                    echo 'You have Ignored ' . $_GET['name'];
+                    echo 'You have Ignored ' . h($_GET['name']);
                     echo '<br><br>';
                     echo 'Redirecting in 5 seconds';
                     echo '<br><br>';
@@ -82,11 +82,11 @@ $conn = connect();
                 echo '<div class="flex items-center justify-between bg-white p-4 rounded-lg shadow-md mb-4">';
                 include 'includes/profile_picture.php'; // Make sure the profile picture has the appropriate Tailwind classes
                 echo '<div class="ml-4">';
-                echo '<a class="text-xl font-semibold text-gray-800 hover:text-blue-500" href="profile.php?id=' . $row['user_id'] .'">' . $row['user_firstname'] . ' ' . $row['user_lastname'] . '</a>';
+                echo '<a class="text-xl font-semibold text-gray-800 hover:text-blue-500" href="profile.php?id=' . $row['user_id'] .'">' . h($row['user_firstname'] . ' ' . $row['user_lastname']) . '</a>';
                 echo '<div class="flex mt-2 space-x-4">';
                 echo '<form method="get" action="requests.php" class="flex space-x-2">';
                 echo '<input type="hidden" name="id" value="' . $row['user_id'] . '">';
-                echo '<input type="hidden" name="name" value="' . $row['user_firstname'] . '">';
+                echo '<input type="hidden" name="name" value="' . h($row['user_firstname']) . '">';
                 echo '<button type="submit" name="accept" class="bg-blue-500 text-white py-1 px-4 rounded-full hover:bg-blue-600 transition duration-300">Accept</button>';
                 echo '<button type="submit" name="ignore" class="bg-gray-500 text-white py-1 px-4 rounded-full hover:bg-gray-600 transition duration-300">Ignore</button>';
                 echo '</form>';

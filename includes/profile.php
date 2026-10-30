@@ -4,9 +4,9 @@ echo '<center>';
 $row = mysqli_fetch_assoc($profilequery);
 // Name and Nickname
 if(!empty($row['user_nickname']))
-    echo $row['user_firstname'] . ' ' . $row['user_lastname'] . ' (' . $row['user_nickname'] . ')';
+    echo h($row['user_firstname'] . ' ' . $row['user_lastname'] . ' (' . $row['user_nickname'] . ')');
 else
-    echo $row['user_firstname'] . ' ' . $row['user_lastname'];
+    echo h($row['user_firstname'] . ' ' . $row['user_lastname']);
 echo '<br>';
 // Profile Info & View
 $width = '168px';
@@ -30,15 +30,15 @@ if(!empty($row['user_status'])){
     echo '<br>';
 }
 // Birthdate
-echo $row['user_birthdate'];
+echo h($row['user_birthdate']);
 // Additional Information
 if(!empty($row['user_hometown'])){
     echo '<br>';
-    echo $row['user_hometown'];
+    echo h($row['user_hometown']);
 }
 if(!empty($row['user_about'])){
     echo '<br>';
-    echo $row['user_about'];
+    echo h($row['user_about']);
 }
 // Friendship Status
 if($flag == 1){
@@ -74,7 +74,7 @@ if(mysqli_num_rows($query4) > 0){
     echo 'Phones:';
     echo '<br>';
     while($row4 = mysqli_fetch_assoc($query4)){
-        echo $row4['user_phone'];
+        echo h($row4['user_phone']);
         echo '<br>';
     }
     echo '</center>';
