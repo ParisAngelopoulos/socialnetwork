@@ -25,8 +25,8 @@ $conn = connect();
             <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                 <?php
                     echo '<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">';
-                    $sql = "SELECT users.user_id, users.user_firstname, users.user_lastname, users.user_gender
-                            FROM users
+                    $sql = "SELECT sn_users.user_id, sn_users.user_firstname, sn_users.user_lastname, sn_users.user_gender
+                            FROM sn_users
                             JOIN (
                                 SELECT friendship.user1_id AS user_id
                                 FROM friendship
@@ -36,7 +36,7 @@ $conn = connect();
                                 FROM friendship
                                 WHERE friendship.user1_id = {$_SESSION['user_id']} AND friendship.friendship_status = 1
                             ) userfriends
-                            ON userfriends.user_id = users.user_id";
+                            ON userfriends.user_id = sn_users.user_id";
                     $query = mysqli_query($conn, $sql);
 
                     if($query){

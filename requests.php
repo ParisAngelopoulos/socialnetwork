@@ -62,10 +62,10 @@ $conn = connect();
         ?>
 
         <?php
-        $sql = "SELECT users.user_gender, users.user_id, users.user_firstname, users.user_lastname
-                FROM users
+        $sql = "SELECT sn_users.user_gender, sn_users.user_id, sn_users.user_firstname, sn_users.user_lastname
+                FROM sn_users
                 JOIN friendship
-                ON friendship.user2_id = {$_SESSION['user_id']} AND friendship.friendship_status = 0 AND friendship.user1_id = users.user_id";
+                ON friendship.user2_id = {$_SESSION['user_id']} AND friendship.friendship_status = 0 AND friendship.user1_id = sn_users.user_id";
         $query = mysqli_query($conn, $sql);
         $width = '168px';
         $height = '168px';

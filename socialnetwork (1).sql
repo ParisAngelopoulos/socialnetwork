@@ -81,10 +81,10 @@ INSERT INTO `posts` (`post_id`, `post_caption`, `post_time`, `post_public`, `pos
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Table structure for table `sn_users`
 --
 
-CREATE TABLE `users` (
+CREATE TABLE `sn_users` (
   `user_id` int NOT NULL,
   `user_firstname` varchar(20) NOT NULL,
   `user_lastname` varchar(20) NOT NULL,
@@ -99,10 +99,10 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `users`
+-- Dumping data for table `sn_users`
 --
 
-INSERT INTO `users` (`user_id`, `user_firstname`, `user_lastname`, `user_nickname`, `user_password`, `user_email`, `user_gender`, `user_birthdate`, `user_status`, `user_about`, `user_hometown`) VALUES
+INSERT INTO `sn_users` (`user_id`, `user_firstname`, `user_lastname`, `user_nickname`, `user_password`, `user_email`, `user_gender`, `user_birthdate`, `user_status`, `user_about`, `user_hometown`) VALUES
 (1, 'Sanne', 'de Vries', 'sanne', '$2y$10$lTHgOoi6KGk213U1tv/XWOluD8rDCYN0/3YG.QD3.X9RjPblw7a36', 'sanne@voorbeeld.nl', 'F', '2003-04-12', 'S', 'Ik studeer marketing en hou van fotografie.', 'Veenendaal'),
 (2, 'Daan', 'Bakker', 'daanb', '$2y$10$lTHgOoi6KGk213U1tv/XWOluD8rDCYN0/3YG.QD3.X9RjPblw7a36', 'daan@voorbeeld.nl', 'M', '2002-09-23', 'E', 'Fanatiek sporter en koffieliefhebber.', 'Ede'),
 (3, 'Youssef', 'El Amrani', 'youssef', '$2y$10$lTHgOoi6KGk213U1tv/XWOluD8rDCYN0/3YG.QD3.X9RjPblw7a36', 'youssef@voorbeeld.nl', 'M', '2004-01-30', 'S', 'Gamer en reiziger.', 'Utrecht'),
@@ -147,9 +147,9 @@ ALTER TABLE `posts`
   ADD KEY `post_by` (`post_by`);
 
 --
--- Indexes for table `users`
+-- Indexes for table `sn_users`
 --
-ALTER TABLE `users`
+ALTER TABLE `sn_users`
   ADD PRIMARY KEY (`user_id`);
 
 --
@@ -169,9 +169,9 @@ ALTER TABLE `posts`
   MODIFY `post_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=112;
 
 --
--- AUTO_INCREMENT for table `users`
+-- AUTO_INCREMENT for table `sn_users`
 --
-ALTER TABLE `users`
+ALTER TABLE `sn_users`
   MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
@@ -182,20 +182,20 @@ ALTER TABLE `users`
 -- Constraints for table `friendship`
 --
 ALTER TABLE `friendship`
-  ADD CONSTRAINT `friendship_ibfk_1` FOREIGN KEY (`user1_id`) REFERENCES `users` (`user_id`),
-  ADD CONSTRAINT `friendship_ibfk_2` FOREIGN KEY (`user2_id`) REFERENCES `users` (`user_id`);
+  ADD CONSTRAINT `friendship_ibfk_1` FOREIGN KEY (`user1_id`) REFERENCES `sn_users` (`user_id`),
+  ADD CONSTRAINT `friendship_ibfk_2` FOREIGN KEY (`user2_id`) REFERENCES `sn_users` (`user_id`);
 
 --
 -- Constraints for table `posts`
 --
 ALTER TABLE `posts`
-  ADD CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`post_by`) REFERENCES `users` (`user_id`);
+  ADD CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`post_by`) REFERENCES `sn_users` (`user_id`);
 
 --
 -- Constraints for table `user_phone`
 --
 ALTER TABLE `user_phone`
-  ADD CONSTRAINT `user_phone_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
+  ADD CONSTRAINT `user_phone_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `sn_users` (`user_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
