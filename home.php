@@ -155,9 +155,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') { // Form is Posted
     }
     $poster = $_SESSION['user_id'];
     // Apply Insertion Query
-    $sql = "INSERT INTO posts (post_caption, post_public, post_time, post_by)
-            VALUES ('$caption', '$public', NOW(), $poster)";
-    $query = mysqli_query($conn, $sql);
+    $query = db_query("INSERT INTO posts (post_caption, post_public, post_time, post_by) VALUES (?, ?, NOW(), ?)", [$caption, $public, $poster]);
     // Action on Successful Query
     if($query){
         // Upload Post Image If a file was chosen
