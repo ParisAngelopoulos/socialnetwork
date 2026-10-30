@@ -40,6 +40,23 @@ ob_start();
 
                 <input type="submit" value="Login" name="login" class="w-full p-3 bg-blue-600 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-700">
             </form>
+
+            <!-- Demo accounts, so visitors can try the site without signing up -->
+            <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm">
+                <p class="font-semibold text-gray-800 mb-2">Just looking around? Use a demo account (password <code>welkom123</code>):</p>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" onclick="fillLogin('paris@voorbeeld.nl')" class="px-3 py-1 bg-white border border-blue-300 rounded-full hover:bg-blue-100">Paris</button>
+                    <button type="button" onclick="fillLogin('sanne@voorbeeld.nl')" class="px-3 py-1 bg-white border border-blue-300 rounded-full hover:bg-blue-100">Sanne</button>
+                    <button type="button" onclick="fillLogin('lisa@voorbeeld.nl')" class="px-3 py-1 bg-white border border-blue-300 rounded-full hover:bg-blue-100">Lisa</button>
+                </div>
+                <p class="text-gray-600 mt-2">Paris has two open friend requests.</p>
+            </div>
+            <script>
+                function fillLogin(email) {
+                    document.getElementById('loginuseremail').value = email;
+                    document.getElementById('loginuserpass').value = 'welkom123';
+                }
+            </script>
         </div>
 
         <div class="tabcontent hidden" id="signup">
