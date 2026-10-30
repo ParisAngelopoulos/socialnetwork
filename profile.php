@@ -127,24 +127,24 @@ function validateField(){
         <?php
         $postsql;
         if($flag == 0) { // Your Own Profile       
-            $postsql = "SELECT posts.post_caption, posts.post_time, users.user_firstname, users.user_lastname,
-                                posts.post_public, users.user_id, users.user_gender, users.user_nickname,
-                                users.user_birthdate, users.user_hometown, users.user_status, users.user_about, 
+            $postsql = "SELECT posts.post_caption, posts.post_time, sn_users.user_firstname, sn_users.user_lastname,
+                                posts.post_public, sn_users.user_id, sn_users.user_gender, sn_users.user_nickname,
+                                sn_users.user_birthdate, sn_users.user_hometown, sn_users.user_status, sn_users.user_about, 
                                 posts.post_id
                         FROM posts
-                        JOIN users
-                        ON users.user_id = posts.post_by
+                        JOIN sn_users
+                        ON sn_users.user_id = posts.post_by
                         WHERE posts.post_by = $current_id
                         ORDER BY posts.post_time DESC";
-            $profilesql = "SELECT users.user_id, users.user_gender, users.user_hometown, users.user_status, users.user_birthdate,
-                                 users.user_firstname, users.user_lastname
-                          FROM users
-                          WHERE users.user_id = $current_id";
+            $profilesql = "SELECT sn_users.user_id, sn_users.user_gender, sn_users.user_hometown, sn_users.user_status, sn_users.user_birthdate,
+                                 sn_users.user_firstname, sn_users.user_lastname
+                          FROM sn_users
+                          WHERE sn_users.user_id = $current_id";
             $profilequery = mysqli_query($conn, $profilesql);
         } else { // Another Profile ---> Retrieve User data and friendship status
-            $profilesql = "SELECT users.user_id, users.user_gender, users.user_hometown, users.user_status, users.user_birthdate,
-                                    users.user_firstname, users.user_lastname, userfriends.friendship_status
-                            FROM users
+            $profilesql = "SELECT sn_users.user_id, sn_users.user_gender, sn_users.user_hometown, sn_users.user_status, sn_users.user_birthdate,
+                                    sn_users.user_firstname, sn_users.user_lastname, userfriends.friendship_status
+                            FROM sn_users
                             LEFT JOIN (
                                 SELECT friendship.user1_id AS user_id, friendship.friendship_status
                                 FROM friendship
@@ -154,42 +154,42 @@ function validateField(){
                                 FROM friendship
                                 WHERE friendship.user1_id = {$_SESSION['user_id']} AND friendship.user2_id = $current_id
                             ) userfriends
-                            ON userfriends.user_id = users.user_id
-                            WHERE users.user_id = $current_id";
+                            ON userfriends.user_id = sn_users.user_id
+                            WHERE sn_users.user_id = $current_id";
             $profilequery = mysqli_query($conn, $profilesql);
             $row = mysqli_fetch_assoc($profilequery);
             mysqli_data_seek($profilequery,0);
             if(isset($row['friendship_status'])){ // Either a friend or requested as a friend
                 if($row['friendship_status'] == 1){ // Friend
-                    $postsql = "SELECT posts.post_caption, posts.post_time, users.user_firstname, users.user_lastname,
-                                        posts.post_public, users.user_id, users.user_gender, users.user_nickname,
-                                        users.user_birthdate, users.user_hometown, users.user_status, users.user_about, 
+                    $postsql = "SELECT posts.post_caption, posts.post_time, sn_users.user_firstname, sn_users.user_lastname,
+                                        posts.post_public, sn_users.user_id, sn_users.user_gender, sn_users.user_nickname,
+                                        sn_users.user_birthdate, sn_users.user_hometown, sn_users.user_status, sn_users.user_about, 
                                         posts.post_id
                                 FROM posts
-                                JOIN users
-                                ON users.user_id = posts.post_by
+                                JOIN sn_users
+                                ON sn_users.user_id = posts.post_by
                                 WHERE posts.post_by = $current_id
                                 ORDER BY posts.post_time DESC";
                 }
                 else if($row['friendship_status'] == 0){ // Requested as a Friend
-                    $postsql = "SELECT posts.post_caption, posts.post_time, users.user_firstname, users.user_lastname,
-                                        posts.post_public, users.user_id, users.user_gender, users.user_nickname,
-                                        users.user_birthdate, users.user_hometown, users.user_status, users.user_about, 
+                    $postsql = "SELECT posts.post_caption, posts.post_time, sn_users.user_firstname, sn_users.user_lastname,
+                                        posts.post_public, sn_users.user_id, sn_users.user_gender, sn_users.user_nickname,
+                                        sn_users.user_birthdate, sn_users.user_hometown, sn_users.user_status, sn_users.user_about, 
                                         posts.post_id
                                 FROM posts
-                                JOIN users
-                                ON users.user_id = posts.post_by
+                                JOIN sn_users
+                                ON sn_users.user_id = posts.post_by
                                 WHERE posts.post_by = $current_id AND posts.post_public = 'Y'
                                 ORDER BY posts.post_time DESC";
                 }
             } else { // Not a friend
-                $postsql = "SELECT posts.post_caption, posts.post_time, users.user_firstname, users.user_lastname,
-                                    posts.post_public, users.user_id, users.user_gender, users.user_nickname,
-                                    users.user_birthdate, users.user_hometown, users.user_status, users.user_about, 
+                $postsql = "SELECT posts.post_caption, posts.post_time, sn_users.user_firstname, sn_users.user_lastname,
+                                    posts.post_public, sn_users.user_id, sn_users.user_gender, sn_users.user_nickname,
+                                    sn_users.user_birthdate, sn_users.user_hometown, sn_users.user_status, sn_users.user_about, 
                                     posts.post_id
                             FROM posts
-                            JOIN users
-                            ON users.user_id = posts.post_by
+                            JOIN sn_users
+                            ON sn_users.user_id = posts.post_by
                             WHERE posts.post_by = $current_id AND posts.post_public = 'Y'
                             ORDER BY posts.post_time DESC";
             }

@@ -62,18 +62,18 @@ $conn = connect();
             <div class="mt-8">
     <?php 
     // Public Posts Union Friends' Private Posts
-    $sql = "SELECT posts.post_caption, posts.post_time, posts.post_public, users.user_firstname,
-                        users.user_lastname, users.user_id, users.user_gender, posts.post_id
+    $sql = "SELECT posts.post_caption, posts.post_time, posts.post_public, sn_users.user_firstname,
+                        sn_users.user_lastname, sn_users.user_id, sn_users.user_gender, posts.post_id
             FROM posts
-            JOIN users
-            ON posts.post_by = users.user_id
-            WHERE posts.post_public = 'Y' OR users.user_id = {$_SESSION['user_id']}
+            JOIN sn_users
+            ON posts.post_by = sn_users.user_id
+            WHERE posts.post_public = 'Y' OR sn_users.user_id = {$_SESSION['user_id']}
             UNION
-            SELECT posts.post_caption, posts.post_time, posts.post_public, users.user_firstname,
-                    users.user_lastname, users.user_id, users.user_gender, posts.post_id
+            SELECT posts.post_caption, posts.post_time, posts.post_public, sn_users.user_firstname,
+                    sn_users.user_lastname, sn_users.user_id, sn_users.user_gender, posts.post_id
             FROM posts
-            JOIN users
-            ON posts.post_by = users.user_id
+            JOIN sn_users
+            ON posts.post_by = sn_users.user_id
             JOIN (
                 SELECT friendship.user1_id AS user_id
                 FROM friendship

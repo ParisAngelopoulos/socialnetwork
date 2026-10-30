@@ -27,32 +27,32 @@ $conn = connect();
             $location = $_GET['location'];
             $key = $_GET['query'];
             if($location == 'emails') {
-                $query = db_query("SELECT * FROM users WHERE users.user_email = ?", [$key]);
+                $query = db_query("SELECT * FROM sn_users WHERE sn_users.user_email = ?", [$key]);
                 include 'includes/userquery.php';
             } else if($location == 'names') {
                 $name = explode(' ', $key, 2); // Break String into Array.
                 if(empty($name[1])) {
-                    $query = db_query("SELECT * FROM users WHERE users.user_firstname = ? OR users.user_lastname = ?", [$name[0], $name[0]]);
+                    $query = db_query("SELECT * FROM sn_users WHERE sn_users.user_firstname = ? OR sn_users.user_lastname = ?", [$name[0], $name[0]]);
                 } else {
-                    $query = db_query("SELECT * FROM users WHERE users.user_firstname = ? AND users.user_lastname = ?", [$name[0], $name[1]]);
+                    $query = db_query("SELECT * FROM sn_users WHERE sn_users.user_firstname = ? AND sn_users.user_lastname = ?", [$name[0], $name[1]]);
                 }
                 include 'includes/userquery.php';
             } else if($location == 'hometowns') {
-                $query = db_query("SELECT * FROM users WHERE users.user_hometown = ?", [$key]);
+                $query = db_query("SELECT * FROM sn_users WHERE sn_users.user_hometown = ?", [$key]);
                 include 'includes/userquery.php';
             } else if($location == 'posts') {
-                $sql = "SELECT posts.post_caption, posts.post_time, posts.post_public, users.user_firstname,
-                                users.user_lastname, users.user_id, users.user_gender, posts.post_id
+                $sql = "SELECT posts.post_caption, posts.post_time, posts.post_public, sn_users.user_firstname,
+                                sn_users.user_lastname, sn_users.user_id, sn_users.user_gender, posts.post_id
                         FROM posts
-                        JOIN users
-                        ON posts.post_by = users.user_id
-                        WHERE (posts.post_public = 'Y' OR users.user_id = {$_SESSION['user_id']}) AND posts.post_caption LIKE ?
+                        JOIN sn_users
+                        ON posts.post_by = sn_users.user_id
+                        WHERE (posts.post_public = 'Y' OR sn_users.user_id = {$_SESSION['user_id']}) AND posts.post_caption LIKE ?
                         UNION
-                        SELECT posts.post_caption, posts.post_time, posts.post_public, users.user_firstname,
-                                users.user_lastname, users.user_id, users.user_gender, posts.post_id
+                        SELECT posts.post_caption, posts.post_time, posts.post_public, sn_users.user_firstname,
+                                sn_users.user_lastname, sn_users.user_id, sn_users.user_gender, posts.post_id
                         FROM posts
-                        JOIN users
-                        ON posts.post_by = users.user_id
+                        JOIN sn_users
+                        ON posts.post_by = sn_users.user_id
                         JOIN (
                             SELECT friendship.user1_id AS user_id
                             FROM friendship
