@@ -27,7 +27,7 @@ $conn = connect();
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             if (isset($_GET['accept'])) {
                 $sql = "UPDATE friendship
-                        SET friendship.friendship_status = 1
+                        SET friendship_status = 1
                         WHERE friendship.user1_id = ? AND friendship.user2_id = ?";
                 $query = db_query($sql, [$_GET['id'], $_SESSION['user_id']]);
                 if($query){
@@ -41,7 +41,7 @@ $conn = connect();
                     header("refresh:5; url=requests.php" );
                 }
                 else{
-                    echo mysqli_error($conn);
+                    echo db_error();
                 }
             } else if(isset($_GET['ignore'])) {
                 $sql6 = "DELETE FROM friendship
@@ -62,23 +62,23 @@ $conn = connect();
         ?>
 
         <?php
-        $sql = "SELECT sn_users.user_gender, sn_users.user_id, sn_users.user_firstname, sn_users.user_lastname
-                FROM sn_users
+        $sql = "SELECT users.user_gender, users.user_id, users.user_firstname, users.user_lastname
+                FROM users
                 JOIN friendship
-                ON friendship.user2_id = {$_SESSION['user_id']} AND friendship.friendship_status = 0 AND friendship.user1_id = sn_users.user_id";
-        $query = mysqli_query($conn, $sql);
+                ON friendship.user2_id = {$_SESSION['user_id']} AND friendship.friendship_status = 0 AND friendship.user1_id = users.user_id";
+        $query = db_query($sql);
         $width = '168px';
         $height = '168px';
         if(!$query)
-            echo mysqli_error($conn);
+            echo db_error();
         if($query){
-            if(mysqli_num_rows($query) == 0){
+            if(db_count($query) == 0){
                 echo '<div class="userquery text-center text-gray-600">';
                 echo 'You have no pending friend requests.';
                 echo '<br><br>';
                 echo '</div>';
             }
-            while($row = mysqli_fetch_assoc($query)){
+            while($row = db_fetch($query)){
                 echo '<div class="flex items-center justify-between bg-white p-4 rounded-lg shadow-md mb-4">';
                 include 'includes/profile_picture.php'; // Make sure the profile picture has the appropriate Tailwind classes
                 echo '<div class="ml-4">';

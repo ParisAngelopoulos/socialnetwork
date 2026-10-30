@@ -3,7 +3,7 @@
   <text x="72" y="118" font-size="20" font-weight="600" fill="#3b5ba9" letter-spacing="2">PROJECT · 2025</text>
   <text x="72" y="190" font-size="64" font-weight="700" fill="#1c1c1c">Social Network</text>
   <text x="72" y="244" font-size="26" fill="#5f5f5f">Profielen, vrienden en een feed</text>
-  <rect x="72" y="300" width="51" height="36" rx="18" fill="#fff" stroke="#d4dbec"/><text x="97" y="324" text-anchor="middle" font-size="16" fill="#3a3a3a">PHP</text><rect x="132.8" y="300" width="70" height="36" rx="18" fill="#fff" stroke="#d4dbec"/><text x="168" y="324" text-anchor="middle" font-size="16" fill="#3a3a3a">MySQL</text><rect x="212.8" y="300" width="118" height="36" rx="18" fill="#fff" stroke="#d4dbec"/><text x="272" y="324" text-anchor="middle" font-size="16" fill="#3a3a3a">JavaScript</text>
+  <rect x="72" y="300" width="51" height="36" rx="18" fill="#fff" stroke="#d4dbec"/><text x="97" y="324" text-anchor="middle" font-size="16" fill="#3a3a3a">PHP</text><rect x="132.8" y="300" width="80" height="36" rx="18" fill="#fff" stroke="#d4dbec"/><text x="173" y="324" text-anchor="middle" font-size="16" fill="#3a3a3a">SQLite</text><rect x="222.4" y="300" width="118" height="36" rx="18" fill="#fff" stroke="#d4dbec"/><text x="281" y="324" text-anchor="middle" font-size="16" fill="#3a3a3a">JavaScript</text>
   <g transform="translate(760 70)">
     <rect width="450" height="350" rx="14" fill="#fff"/>
     <rect y="336" width="450" height="14" fill="#fff"/>

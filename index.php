@@ -123,14 +123,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // A form is posted
     if (isset($_POST['login'])) { // Login process
         $useremail = $_POST['useremail'];
         $userpass = $_POST['userpass'];
-        $query = db_query("SELECT * FROM sn_users WHERE user_email = ?", [$useremail]);
+        $query = db_query("SELECT * FROM users WHERE user_email = ?", [$useremail]);
         if($query){
-            $row = mysqli_fetch_assoc($query);
+            $row = db_fetch($query);
             // Old accounts still have an md5 hash; on login it is replaced by a safe password_hash
             $oldhash = $row && $row['user_password'] === md5($userpass);
             if($row && ($oldhash || password_verify($userpass, $row['user_password']))) {
                 if($oldhash) {
-                    db_query("UPDATE sn_users SET user_password = ? WHERE user_id = ?", [password_hash($userpass, PASSWORD_DEFAULT), $row['user_id']]);
+                    db_query("UPDATE users SET user_password = ? WHERE user_id = ?", [password_hash($userpass, PASSWORD_DEFAULT), $row['user_id']]);
                 }
                 session_regenerate_id(true);
                 $_SESSION['user_id'] = $row['user_id'];
@@ -143,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // A form is posted
                 </script> <?php
             }
         } else{
-            echo mysqli_error($conn);
+            echo db_error();
         }
     }
     if (isset($_POST['register'])) { // Register process
@@ -160,10 +160,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // A form is posted
         $userstatus = $_POST['userstatus'] ?? NULL;
 
         // Check for Some Unique Constraints
-        $query = db_query("SELECT user_nickname, user_email FROM sn_users WHERE user_nickname = ? OR user_email = ?", [$usernickname, $useremail]);
-        $exists = mysqli_num_rows($query) > 0;
+        $query = db_query("SELECT user_nickname, user_email FROM users WHERE user_nickname = ? OR user_email = ?", [$usernickname, $useremail]);
+        $exists = db_count($query) > 0;
         if($exists){
-            $row = mysqli_fetch_assoc($query);
+            $row = db_fetch($query);
             if($usernickname == $row['user_nickname'] && !empty($usernickname)){
                 ?> <script>
                 document.getElementsByClassName("required")[4].innerHTML = "This Nickname already exists.";
@@ -176,12 +176,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // A form is posted
             }
         }
         // Insert Data
-        $query = !$exists && db_query("INSERT INTO sn_users(user_firstname, user_lastname, user_nickname, user_password, user_email, user_gender, user_birthdate, user_status, user_about, user_hometown)
+        $query = !$exists && db_query("INSERT INTO users(user_firstname, user_lastname, user_nickname, user_password, user_email, user_gender, user_birthdate, user_status, user_about, user_hometown)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 [$userfirstname, $userlastname, $usernickname, $userpassword, $useremail, $usergender, $userbirthdate, $userstatus, $userabout, $userhometown]);
         if($query){
             session_regenerate_id(true);
-            $_SESSION['user_id'] = mysqli_insert_id($conn);
+            $_SESSION['user_id'] = db_insert_id();
             header("location:home.php");
         }
     }

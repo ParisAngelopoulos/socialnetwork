@@ -25,8 +25,8 @@ $conn = connect();
             <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                 <?php
                     echo '<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">';
-                    $sql = "SELECT sn_users.user_id, sn_users.user_firstname, sn_users.user_lastname, sn_users.user_gender
-                            FROM sn_users
+                    $sql = "SELECT users.user_id, users.user_firstname, users.user_lastname, users.user_gender
+                            FROM users
                             JOIN (
                                 SELECT friendship.user1_id AS user_id
                                 FROM friendship
@@ -36,14 +36,14 @@ $conn = connect();
                                 FROM friendship
                                 WHERE friendship.user1_id = {$_SESSION['user_id']} AND friendship.friendship_status = 1
                             ) userfriends
-                            ON userfriends.user_id = sn_users.user_id";
-                    $query = mysqli_query($conn, $sql);
+                            ON userfriends.user_id = users.user_id";
+                    $query = db_query($sql);
 
                     if($query){
-                        if(mysqli_num_rows($query) == 0){
+                        if(db_count($query) == 0){
                             echo '<div class="col-span-full text-center bg-white p-4 rounded-lg shadow-md">You don\'t yet have any friends.</div>';
                         } else {
-                            while($row = mysqli_fetch_assoc($query)){
+                            while($row = db_fetch($query)){
                                 echo '<div class="bg-white p-4 rounded-lg shadow-md text-center">';
                                 echo '<div class="w-32 h-32 mx-auto rounded-full overflow-hidden mb-4">';
                                 include 'includes/profile_picture.php'; // Add the profile picture

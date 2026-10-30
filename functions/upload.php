@@ -12,13 +12,13 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
                 $success = 0;
                 $filepath = "data/images/profiles/" . $_SESSION['user_id'] . '.' . $filetype;
                 if(move_uploaded_file($_FILES["fileUpload"]["tmp_name"], $filepath)){
-                    $query5 = db_query("INSERT INTO posts (post_caption, post_public, post_time, post_by) VALUES (?, 'N', NOW(), ?)",
+                    $query5 = db_query("INSERT INTO posts (post_caption, post_public, post_time, post_by) VALUES (?, 'N', datetime('now', 'localtime'), ?)",
                             [$row['user_firstname'] . " " . $row['user_lastname'] . " has changed his profile picture.", $_SESSION['user_id']]);
-                    $last_id = mysqli_insert_id($conn);
+                    $last_id = db_insert_id();
                     $filepath2 = "data/images/posts/" . $last_id . '.' . $filetype;
                     copy($filepath, $filepath2);
                     if(!$query5)
-                        echo mysqli_error($conn);
+                        echo db_error();
                     else
                         $success = 1;
 
