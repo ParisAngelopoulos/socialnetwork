@@ -15,12 +15,12 @@ $conn = connect();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Social Network</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="resources/css/tailwind.css">
 </head>
-<body class="bg-gray-50">
-    <div class="container mx-auto">
-        <?php include 'includes/navbar.php'; ?>
-        <h1 class="text-3xl font-bold text-center mt-8 text-gray-800">Friend Requests</h1>
+<body class="bg-gray-100 min-h-screen">
+    <?php include 'includes/navbar.php'; ?>
+    <main class="max-w-2xl mx-auto px-4 py-8">
+        <h1 class="text-2xl font-bold text-gray-900 mb-6">Friend requests</h1>
         
         <?php
         // Responding to Request
@@ -31,14 +31,9 @@ $conn = connect();
                         WHERE friendship.user1_id = ? AND friendship.user2_id = ?";
                 $query = db_query($sql, [$_GET['id'], $_SESSION['user_id']]);
                 if($query){
-                    echo '<div class="userquery text-center text-green-600 font-semibold">';
+                    echo '<div class="mb-4 rounded-lg bg-green-50 border border-green-200 text-green-800 px-4 py-3">';
                     echo 'You have accepted ' . h($_GET['name']);
-                    echo '<br><br>';
-                    echo 'Redirecting in 5 seconds';
-                    echo '<br><br>';
                     echo '</div>';
-                    echo '<br>';
-                    header("refresh:5; url=requests.php" );
                 }
                 else{
                     echo db_error();
@@ -48,14 +43,9 @@ $conn = connect();
                         WHERE friendship.user1_id = ? AND friendship.user2_id = ?";
                 $query6 = db_query($sql6, [$_GET['id'], $_SESSION['user_id']]);
                 if($query6){
-                    echo '<div class="userquery text-center text-red-600 font-semibold">';
+                    echo '<div class="mb-4 rounded-lg bg-gray-50 border border-gray-200 text-gray-700 px-4 py-3">';
                     echo 'You have Ignored ' . h($_GET['name']);
-                    echo '<br><br>';
-                    echo 'Redirecting in 5 seconds';
-                    echo '<br><br>';
                     echo '</div>';
-                    echo '<br>';
-                    header("refresh:5; url=requests.php" );
                 }
             }
         }
@@ -73,29 +63,23 @@ $conn = connect();
             echo db_error();
         if($query){
             if(db_count($query) == 0){
-                echo '<div class="userquery text-center text-gray-600">';
-                echo 'You have no pending friend requests.';
-                echo '<br><br>';
-                echo '</div>';
+                echo '<div class="bg-white rounded-xl border border-gray-200 p-6 text-center text-gray-500">You have no open friend requests.</div>';
             }
             while($row = db_fetch($query)){
-                echo '<div class="flex items-center justify-between bg-white p-4 rounded-lg shadow-md mb-4">';
-                include 'includes/profile_picture.php'; // Make sure the profile picture has the appropriate Tailwind classes
-                echo '<div class="ml-4">';
-                echo '<a class="text-xl font-semibold text-gray-800 hover:text-blue-500" href="profile.php?id=' . $row['user_id'] .'">' . h($row['user_firstname'] . ' ' . $row['user_lastname']) . '</a>';
-                echo '<div class="flex mt-2 space-x-4">';
-                echo '<form method="get" action="requests.php" class="flex space-x-2">';
-                echo '<input type="hidden" name="id" value="' . $row['user_id'] . '">';
+                echo '<div class="flex items-center gap-4 bg-white rounded-xl border border-gray-200 p-4 mb-3">';
+                $width = '56px';
+                include 'includes/profile_picture.php';
+                echo '<a class="flex-1 font-semibold text-gray-900 hover:text-blue-600" href="profile.php?id=' . (int)$row['user_id'] .'">' . h($row['user_firstname'] . ' ' . $row['user_lastname']) . '</a>';
+                echo '<form method="get" action="requests.php" class="flex gap-2">';
+                echo '<input type="hidden" name="id" value="' . (int)$row['user_id'] . '">';
                 echo '<input type="hidden" name="name" value="' . h($row['user_firstname']) . '">';
-                echo '<button type="submit" name="accept" class="bg-blue-500 text-white py-1 px-4 rounded-full hover:bg-blue-600 transition duration-300">Accept</button>';
-                echo '<button type="submit" name="ignore" class="bg-gray-500 text-white py-1 px-4 rounded-full hover:bg-gray-600 transition duration-300">Ignore</button>';
+                echo '<button type="submit" name="accept" class="bg-blue-600 text-white text-sm font-semibold py-1.5 px-4 rounded-lg hover:bg-blue-700">Accept</button>';
+                echo '<button type="submit" name="ignore" class="bg-gray-100 text-gray-700 text-sm font-semibold py-1.5 px-4 rounded-lg hover:bg-gray-200">Ignore</button>';
                 echo '</form>';
-                echo '</div>';
-                echo '</div>';
                 echo '</div>';
             }
         }
         ?>
-    </div>
+    </main>
 </body>
 </html>

@@ -20,46 +20,37 @@ $conn = connect();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Social Network</title>
-    <script src="https://cdn.tailwindcss.com"></script> <!-- Tailwind CDN -->
+    <link rel="stylesheet" href="resources/css/tailwind.css">
 </head>
-<body class="bg-gray-100">
-    <div class="container mx-auto">
-        <?php include 'includes/navbar.php'; ?>
-        <div class="py-10">
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-2xl font-semibold mb-4">Create Post</h2>
-                <hr class="mb-6">
+<body class="bg-gray-100 min-h-screen">
+    <?php include 'includes/navbar.php'; ?>
+    <main class="max-w-2xl mx-auto px-4 py-8">
+            <section class="bg-white rounded-xl border border-gray-200 p-5">
+                <h2 class="font-semibold text-gray-900 mb-3">Create a post</h2>
                 <form method="post" action="" onsubmit="return validatePost()" enctype="multipart/form-data">
-                    <div class="flex justify-between items-center mb-4">
-                        <div>
-                            <label for="public" class="flex items-center text-sm text-gray-600">
-                                <input type="checkbox" id="public" name="public" class="mr-2">
-                                <span>Public</span>
-                            </label>
-                        </div>
-                        <span class="text-xs text-gray-400">*Caption is required</span>
-                    </div>
-
-                    <textarea rows="4" name="caption" class="w-full p-3 border rounded-md border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Write your caption..."></textarea>
+                    <textarea rows="3" name="caption" class="w-full p-3 border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="What's on your mind?"></textarea>
+                    <span class="required hidden text-xs text-red-600">Write something first.</span>
 
                     <!-- Image preview -->
-                    <div class="mt-4 text-center">
-                        <img id="preview" src="" style="max-width: 580px; display:none;" class="mx-auto rounded-md" />
-                    </div>
+                    <img id="preview" src="" style="display:none;" class="mt-3 rounded-lg max-h-72 mx-auto" alt="" />
 
-                    <!-- File Upload -->
-                    <div class="mt-4 flex items-center justify-between">
-                        <label for="imagefile" class="cursor-pointer">
-                            <img src="images/photo.png" class="w-8 h-8" alt="Upload Image" />
-                        </label>
-                        <input type="file" name="fileUpload" id="imagefile" class="hidden" />
-                        <input type="submit" value="Post" name="post" class="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition duration-300">
+                    <div class="mt-3 flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex items-center gap-4 text-sm text-gray-600">
+                            <label for="imagefile" class="cursor-pointer inline-flex items-center gap-2 hover:text-blue-600">
+                                <img src="images/photo.png" class="w-6 h-6" alt="" /> Photo
+                            </label>
+                            <input type="file" name="fileUpload" id="imagefile" class="hidden" />
+                            <label for="public" class="inline-flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="public" name="public"> Public (otherwise friends only)
+                            </label>
+                        </div>
+                        <input type="submit" value="Post" name="post" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold cursor-pointer hover:bg-blue-700">
                     </div>
                 </form>
-            </div>
+            </section>
             <!-- News Feed -->
-            <h1 class="text-3xl font-semibold mt-10">News Feed</h1>
-            <div class="mt-8">
+            <h1 class="text-lg font-semibold text-gray-900 mt-8 mb-3">News feed</h1>
+            <div>
     <?php 
     // Public Posts Union Friends' Private Posts
     $sql = "SELECT posts.post_caption, posts.post_time, posts.post_public, users.user_firstname,
@@ -91,22 +82,18 @@ $conn = connect();
         echo db_error();
     }
     if(db_count($query) == 0){
-        echo '<div class="bg-white p-4 rounded-lg shadow-md text-center mb-4">';
+        echo '<div class="bg-white rounded-xl border border-gray-200 p-6 text-center text-gray-500">';
         echo 'There are no posts yet to show.';
         echo '</div>';
     }
     else{
         while($row = db_fetch($query)){
-            echo '<div class="bg-white p-6 mb-6 rounded-lg shadow-md border border-gray-300">';  // Border added here
-            include 'includes/post.php'; // Assuming your post rendering is done in this include
-            echo '</div>';
+            include 'includes/post.php';
         }
     }
     ?>
 </div>
-
-        </div>
-    </div>
+    </main>
 
     <script src="resources/js/jquery.js"></script>
     <script>

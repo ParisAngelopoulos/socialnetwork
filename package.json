@@ -1,0 +1,8 @@
+{
+    "scripts": {
+        "build:css": "tailwindcss -i tailwind.input.css -o resources/css/tailwind.css --content \"./*.php,./includes/*.php\" --minify"
+    },
+    "devDependencies": {
+        "tailwindcss": "^3.4.17"
+    }
+}

@@ -15,14 +15,12 @@ $conn = connect();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Social Network</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="resources/css/tailwind.css">
 </head>
-<body class="bg-gray-100">
-
-    <div class="container mx-auto">
-        <?php include 'includes/navbar.php'; ?>
-        <h1 class="text-3xl font-bold text-center mt-8 text-gray-800">Search Results</h1>
-
+<body class="bg-gray-100 min-h-screen">
+    <?php include 'includes/navbar.php'; ?>
+    <main class="max-w-2xl mx-auto px-4 py-8">
+        <h1 class="text-2xl font-bold text-gray-900 mb-6">Search results for “<?php echo h($_GET['query'] ?? ''); ?>”</h1>
         <?php
             $location = $_GET['location'];
             $key = $_GET['query'];
@@ -73,18 +71,16 @@ $conn = connect();
                     echo db_error();
                 }
                 if(db_count($query) == 0){
-                    echo '<div class="p-4 bg-white rounded-lg shadow-md">';
+                    echo '<div class="bg-white rounded-xl border border-gray-200 p-6 text-center text-gray-500">';
                     echo 'There are no results for your search, try broadening your query.';
                     echo '</div>';
-                    echo '<br>';
                 }
                 while($row = db_fetch($query)){
                     include 'includes/post.php';
-                    echo '<br>';
                 }
             }    
         ?>
-    </div>
+    </main>
 
 </body>
 </html>

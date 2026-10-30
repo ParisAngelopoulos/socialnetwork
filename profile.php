@@ -21,108 +21,17 @@ if(isset($_GET['id']) && $_GET['id'] != $_SESSION['user_id']) {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Social Network</title>
-    <link rel="stylesheet" type="text/css" href="resources/css/main.css">
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-        <style>
-    .post{
-        margin-right: 50px;
-        float: right;
-        margin-bottom: 18px;
-    }
-    .profile{
-        margin-left: 50px;
-        background-color: white;
-        box-shadow: 0 0 5px #4267b2;
-        width: 220px;
-        padding: 20px;
-    }
-    input[type="file"]{
-        display: none;
-    }
-    label.upload{
-        cursor: pointer;
-        color: white;
-        background-color: #4267b2;
-        padding: 8px 12px;
-        display: inline-block;
-        max-width: 80px;
-        overflow: auto;
-    }
-    label.upload:hover{
-        background-color: #23385f;
-    }
-    .changeprofile{
-        color: #23385f;
-        font-family: Fontin SmallCaps;
-    }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile · Pynch</title>
+    <link rel="stylesheet" href="resources/css/tailwind.css">
 </head>
-<body>
-    <div class="container mx-auto">
-<div class="bg-white shadow-md p-4">
-    <?php
-        // Friend requests count query
-        $sql2 = "SELECT COUNT(*) AS count FROM friendship 
-                 WHERE friendship.user2_id = {$_SESSION['user_id']} AND friendship.friendship_status = 0";
-        $query2 = db_query($sql2);
-        $row = db_fetch($query2);
-    ?>
-    <div class="container mx-auto flex justify-between items-center">
-        <!-- Navbar Links -->
-        <ul class="flex space-x-8">
-            <li>
-                <a href="requests.php" class="text-gray-700 hover:text-blue-600">
-                    Friend Requests (<?php echo $row['count'] ?>)
-                </a>
-            </li>
-            <li>
-                <a href="profile.php" class="text-gray-700 hover:text-blue-600">Profile</a>
-            </li>
-            <li>
-                <a href="friends.php" class="text-gray-700 hover:text-blue-600">Friends</a>
-            </li>
-            <li>
-                <a href="home.php" class="text-gray-700 hover:text-blue-600">Home</a>
-            </li>
-            <li>
-                <a href="logout.php" class="text-gray-700 hover:text-blue-600">Log Out</a>
-            </li>
-        </ul>
+<body class="bg-gray-100 min-h-screen">
+<?php include 'includes/navbar.php'; ?>
 
-        <!-- Search Form -->
-        <div class="relative">
-            <form method="get" action="search.php" onsubmit="return validateField()">
-                <div class="flex items-center space-x-2">
-                    <select name="location" class="px-3 py-1 rounded-lg border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600">
-                        <option value="emails">Emails</option>
-                        <option value="names">Names</option>
-                        <option value="hometowns">Hometowns</option>
-                        <option value="posts">Posts</option>
-                    </select>
-                    <input type="text" name="query" id="query" placeholder="Search" class="px-3 py-1 rounded-lg border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600">
-                    <input type="submit" value="Search" id="querybutton" class="px-4 py-1 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-800">
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<script>
-function validateField(){
-    var query = document.getElementById("query");
-    var button = document.getElementById("querybutton");
-    if(query.value == "") {
-        query.placeholder = 'Type something!';
-        return false;
-    }
-    return true;
-}
-</script>
-
-<div class="container mx-auto py-10">
+<main class="max-w-5xl mx-auto px-4 py-8">
     
         <?php
         $postsql;
@@ -137,13 +46,13 @@ function validateField(){
                         WHERE posts.post_by = $current_id
                         ORDER BY posts.post_time DESC";
             $profilesql = "SELECT users.user_id, users.user_gender, users.user_hometown, users.user_status, users.user_birthdate,
-                                 users.user_firstname, users.user_lastname
+                                 users.user_firstname, users.user_lastname, users.user_nickname, users.user_about
                           FROM users
                           WHERE users.user_id = $current_id";
             $profilequery = db_query($profilesql);
         } else { // Another Profile ---> Retrieve User data and friendship status
             $profilesql = "SELECT users.user_id, users.user_gender, users.user_hometown, users.user_status, users.user_birthdate,
-                                    users.user_firstname, users.user_lastname, userfriends.friendship_status
+                                    users.user_firstname, users.user_lastname, users.user_nickname, users.user_about, userfriends.friendship_status
                             FROM users
                             LEFT JOIN (
                                 SELECT friendship.user1_id AS user_id, friendship.friendship_status
@@ -194,66 +103,50 @@ function validateField(){
                             ORDER BY posts.post_time DESC";
             }
         }
-        $postquery = db_query($postsql);    
-        if($postquery){
-            // Posts
-            $width = '40px'; 
-            $height = '40px';
-            if(db_count($postquery) == 0){ // No Posts
-                if($flag == 0){ // Message shown if it's your own profile
-                    echo '<div class="post">';
-                    echo 'You don\'t have any posts yet';
-                    echo '</div>';
-                } else { // Message shown if it's another profile other than you.
-                    echo '<div class="post">';
-                    echo 'There is no public posts to show.';
+        $postquery = db_query($postsql);
+        ?>
+        <div class="grid gap-6 md:grid-cols-3">
+            <!-- Profile card, and on your own profile: change picture and add a phone number -->
+            <aside class="space-y-4">
+                <?php include 'includes/profile.php'; ?>
+                <?php if($flag == 0){ ?>
+                <section class="bg-white rounded-xl border border-gray-200 p-5">
+                    <h2 class="font-semibold text-gray-900 mb-3">Change profile picture</h2>
+                    <form action="" method="post" enctype="multipart/form-data" class="space-y-3">
+                        <label class="block cursor-pointer text-center text-sm px-3 py-2 rounded-lg border border-dashed border-gray-300 text-gray-600 hover:border-blue-500 hover:text-blue-600">
+                            <span id="path">Choose a picture…</span>
+                            <input type="file" name="fileUpload" id="selectedFile" class="hidden" onchange="showPath()">
+                        </label>
+                        <input type="submit" value="Upload picture" name="profile" class="w-full py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold cursor-pointer hover:bg-blue-700">
+                    </form>
+                </section>
+                <section class="bg-white rounded-xl border border-gray-200 p-5">
+                    <h2 class="font-semibold text-gray-900 mb-3">Add phone number</h2>
+                    <form method="post" onsubmit="return validateNumber()" class="space-y-2">
+                        <input type="text" name="number" id="phonenum" placeholder="0612345678" class="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <div class="required text-xs text-red-600"></div>
+                        <input type="submit" value="Add number" name="phone" class="w-full py-2 rounded-lg bg-gray-800 text-white text-sm font-semibold cursor-pointer hover:bg-gray-900">
+                    </form>
+                </section>
+                <?php } ?>
+            </aside>
+
+            <!-- Posts -->
+            <section class="md:col-span-2">
+                <h2 class="text-lg font-semibold text-gray-900 mb-3"><?php echo $flag == 0 ? 'Your posts' : 'Posts'; ?></h2>
+                <?php
+                if (db_count($postquery) == 0) {
+                    echo '<div class="bg-white rounded-xl border border-gray-200 p-6 text-gray-500 text-center">';
+                    echo $flag == 0 ? 'You don\'t have any posts yet. <a href="home.php" class="text-blue-600 underline">Write your first one</a>.' : 'There are no posts to show yet.';
                     echo '</div>';
                 }
-                include 'includes/profile.php';
-            } else {
-                while($row = db_fetch($postquery)){
+                while ($row = db_fetch($postquery)) {
                     include 'includes/post.php';
                 }
-                // Profile Info
-                include 'includes/profile.php';
                 ?>
-                <br>
-                <?php if($flag == 0){?>
-                <div class="profile">
-                    <center class="changeprofile">Change Profile Picture</center>
-                    <br>
-                    <form action="" method="post" enctype="multipart/form-data">
-                        <center>
-                            <label class="upload" onchange="showPath()">
-                                <span id="path" style="color: white;">... Browse</span>
-                                <input type="file" name="fileUpload" id="selectedFile">
-                            </label>
-                        </center>
-                        <br>
-                        <input type="submit" value="Upload Image" name="profile">
-                    </form>
-                </div>
-                <br>
-                <div class="profile">
-                    <center class="changeprofile">Add Phone Number</center>
-                    <br>
-                    <form method="post" onsubmit="return validateNumber()">
-                        <center>
-                            <input type="text" name="number" id="phonenum">
-                            <div class="required"></div>
-                            <br>
-                            <input type="submit" value="Submit" name="phone">
-                        </center>
-                    </form>
-                </div>
-                <br>
-                <?php } ?>
-                <?php
-            }
-        }
-        ?>
-    </div>
-    </div>
+            </section>
+        </div>
+</main>
 </body>
 <script>
 function showPath(){
