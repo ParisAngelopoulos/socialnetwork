@@ -30,7 +30,7 @@ ob_start();
 
         <div class="tabcontent" id="signin">
             <form method="post" onsubmit="return validateLogin()">
-                <label for="loginuseremail" class="block text-gray-700 font-medium">Email<span class="text-red-500">*</span></label>
+                <label for="loginuseremail" class="block text-gray-700 font-medium">Email or nickname<span class="text-red-500">*</span></label>
                 <input type="text" name="useremail" id="loginuseremail" class="w-full p-3 mb-4 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600">
 
                 <label for="loginuserpass" class="block text-gray-700 font-medium">Password<span class="text-red-500">*</span></label>
@@ -45,15 +45,15 @@ ob_start();
             <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm">
                 <p class="font-semibold text-gray-800 mb-2">Just looking around? Use a demo account (password <code>welkom123</code>):</p>
                 <div class="flex flex-wrap gap-2">
-                    <button type="button" onclick="fillLogin('paris@voorbeeld.nl')" class="px-3 py-1 bg-white border border-blue-300 rounded-full hover:bg-blue-100">Paris</button>
-                    <button type="button" onclick="fillLogin('sanne@voorbeeld.nl')" class="px-3 py-1 bg-white border border-blue-300 rounded-full hover:bg-blue-100">Sanne</button>
-                    <button type="button" onclick="fillLogin('lisa@voorbeeld.nl')" class="px-3 py-1 bg-white border border-blue-300 rounded-full hover:bg-blue-100">Lisa</button>
+                    <button type="button" onclick="fillLogin('paris')" class="px-3 py-1 bg-white border border-blue-300 rounded-full hover:bg-blue-100">Paris</button>
+                    <button type="button" onclick="fillLogin('sanne')" class="px-3 py-1 bg-white border border-blue-300 rounded-full hover:bg-blue-100">Sanne</button>
+                    <button type="button" onclick="fillLogin('lisaj')" class="px-3 py-1 bg-white border border-blue-300 rounded-full hover:bg-blue-100">Lisa</button>
                 </div>
                 <p class="text-gray-600 mt-2">Paris has two open friend requests.</p>
             </div>
             <script>
-                function fillLogin(email) {
-                    document.getElementById('loginuseremail').value = email;
+                function fillLogin(nickname) {
+                    document.getElementById('loginuseremail').value = nickname;
                     document.getElementById('loginuserpass').value = 'welkom123';
                 }
             </script>
@@ -138,9 +138,10 @@ ob_start();
 $conn = connect();
 if ($_SERVER['REQUEST_METHOD'] == 'POST') { // A form is posted
     if (isset($_POST['login'])) { // Login process
-        $useremail = $_POST['useremail'];
+        // You can log in with your email address or your nickname
+        $useremail = trim(post_email());
         $userpass = $_POST['userpass'];
-        $query = db_query("SELECT * FROM users WHERE user_email = ?", [$useremail]);
+        $query = db_query("SELECT * FROM users WHERE user_email = ? OR user_nickname = ? LIMIT 1", [$useremail, $useremail]);
         if($query){
             $row = db_fetch($query);
             // Old accounts still have an md5 hash; on login it is replaced by a safe password_hash
@@ -169,7 +170,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // A form is posted
         $userlastname = $_POST['userlastname'];
         $usernickname = $_POST['usernickname'];
         $userpassword = password_hash($_POST['userpass'], PASSWORD_DEFAULT);
-        $useremail = $_POST['useremail'];
+        $useremail = trim(post_email());
         $userbirthdate = $_POST['selectyear'] . '-' . $_POST['selectmonth'] . '-' . $_POST['selectday'];
         $usergender = $_POST['usergender'];
         $userhometown = $_POST['userhometown'];
