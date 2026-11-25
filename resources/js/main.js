@@ -42,17 +42,16 @@ function validateLogin() {
     var useremail = document.getElementById("loginuseremail").value;
     var userpass = document.getElementById("loginuserpass").value;
     var result = true;
+    // Email address or nickname, so no email format check here
     if (useremail == "") {
         required[0].innerHTML = "This field cannot be empty.";
-        result = false;
-    } else if (!validateEmail(useremail)) {
-        required[0].innerHTML = "Invalid Email Format.";
         result = false;
     }
     if (userpass == "") {
         required[1].innerHTML = "This field cannot be empty.";
         result = false;
     }
+    if (result) hideEmail(document.getElementById("loginuseremail"));
     return result;
 }
 
@@ -98,7 +97,20 @@ function validateRegister() {
         required[8].innerHTML = "You must select your gender.";
         result = false;
     }
+    if (result) hideEmail(document.getElementById("useremail"));
     return result;
+}
+
+// The web host refuses form posts that contain an email address (400 Bad Request).
+// So an email address goes along base64-encoded in a hidden field <name>_b64; the server decodes it.
+function hideEmail(input) {
+    if (!input || input.value.indexOf("@") === -1 || !input.name) return;
+    var hidden = document.createElement("input");
+    hidden.type = "hidden";
+    hidden.name = input.name + "_b64";
+    hidden.value = btoa(unescape(encodeURIComponent(input.value)));
+    input.form.appendChild(hidden);
+    input.removeAttribute("name");
 }
 
 function clearRequiredFields() {

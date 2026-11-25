@@ -15,7 +15,7 @@ Een klein sociaal netwerk, gebouwd in gewone PHP zonder framework. Je maakt een 
 
 ## Functies
 
-- **Registreren en inloggen**, met controle van de formulieren in JavaScript.
+- **Registreren en inloggen** (met e-mailadres of bijnaam), met controle van de formulieren in JavaScript. De webhost weigert formulieren met een e-mailadres erin, dus de browser stuurt het adres base64-gecodeerd mee.
 - **Profiel**: naam, bijnaam, woonplaats, een stukje over jezelf en een profielfoto.
 - **Berichten plaatsen**, met of zonder foto. Een bericht is openbaar of alleen voor vrienden.
 - **Feed** (`home.php`): je eigen berichten, openbare berichten en berichten van je vrienden.
@@ -36,7 +36,7 @@ Wil je opnieuw beginnen met alleen de voorbeelddata? Verwijder dan `private/data
 
 ### Testaccounts
 
-In de database staan vijf gebruikers met berichten, vriendschappen en openstaande vriendverzoeken. Ze hebben allemaal het wachtwoord `welkom123`.
+In de database staan vijf gebruikers met berichten, vriendschappen en openstaande vriendverzoeken. Ze hebben allemaal het wachtwoord `welkom123`. Je logt in met het e-mailadres of met de bijnaam (bijvoorbeeld `paris`).
 
 | Naam | E-mailadres |
 | --- | --- |

@@ -73,4 +73,13 @@ function h($text) {
     return htmlspecialchars((string)$text, ENT_QUOTES, 'UTF-8');
 }
 
-?>
+// The email address from a form. The web host refuses form posts that contain an email address
+// (400 Bad Request), so the browser sends it base64-encoded as <field>_b64 (see hideEmail() in main.js).
+function post_email($field = 'useremail') {
+    if (isset($_POST[$field . '_b64'])) {
+        $decoded = base64_decode((string)$_POST[$field . '_b64'], true);
+        return $decoded === false ? '' : $decoded;
+    }
+    return (string)($_POST[$field] ?? '');
+}
+
